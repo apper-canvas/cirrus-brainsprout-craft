@@ -316,6 +316,17 @@ function MainFeature({ currentSubject }) {
     console.log(`Level: ${currentLevel}, Questions in level: ${questionsInLevel}, Asked questions: ${askedQuestions.length}`);
   }, [currentLevel, questionsInLevel, askedQuestions]);
 
+  // Auto navigate to next question after showing answer
+  useEffect(() => {
+    let timer;
+    if (showAnswer) {
+      timer = setTimeout(() => {
+        handleNextQuestion();
+      }, 2000); // 2 second delay before moving to next question
+    }
+    return () => clearTimeout(timer);
+  }, [showAnswer]);
+
   return (
     <div className="py-4">
       {/* Subject Header */}
