@@ -105,7 +105,7 @@ function MainFeature({ currentSubject }) {
         { question: "How many fingers on one hand?", answer: "5", options: ["3", "4", "5", "6"] },
         { question: "Which animal swims in water?", answer: "fish", options: ["cat", "dog", "fish", "bird"] },
         { question: "What color is the sky?", answer: "blue", options: ["green", "blue", "red", "yellow"] },
-        { question: "Which shape is round?", answer: "circle", options: ["square", "triangle", "rectangle", "circle"] }
+        { question: "Which shape is round?", answer: "circle", options: ["square", "triangle", "rectangle", "circle"] },
         { question: "What comes after 'Wednesday'?", answer: "Thursday", options: ["Tuesday", "Thursday", "Friday", "Monday"] }
       ],
       medium: [
