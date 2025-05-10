@@ -308,7 +308,7 @@ function MainFeature({ currentSubject }) {
   
   useEffect(() => {
     getNewQuestion();
-  };
+  });
 
   return (
     <div className="py-4">
