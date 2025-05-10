@@ -367,7 +367,7 @@ function MainFeature({ currentSubject }) {
             style={{ width: `${(10 - questionsInLevel) * 10}%` }}
           ></div>
         </div>
-        <p className="text-xs text-right mt-1 text-surface-500">Question {10 - questionsInLevel + 1} of 10</p>
+        <p className="text-xs text-right mt-1 text-surface-500">Question {askedQuestions.length} of 10</p>
       </div>
       <AnimatePresence mode="wait">
         <motion.div
