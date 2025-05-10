@@ -106,7 +106,7 @@ function MainFeature({ currentSubject }) {
         { question: "Which animal swims in water?", answer: "fish", options: ["cat", "dog", "fish", "bird"] },
         { question: "What color is the sky?", answer: "blue", options: ["green", "blue", "red", "yellow"] },
         { question: "Which shape is round?", answer: "circle", options: ["square", "triangle", "rectangle", "circle"] },
-        { question: "What comes after 'Wednesday'?", answer: "Thursday", options: ["Tuesday", "Thursday", "Friday", "Monday"] }
+        { question: "Which shape is round?", answer: "circle", options: ["square", "triangle", "rectangle", "circle"] }
       ],
       medium: [
         { question: "What is the capital of France?", answer: "Paris", options: ["London", "Paris", "Rome", "Berlin"] },
@@ -202,14 +202,9 @@ function MainFeature({ currentSubject }) {
 
   // Handle difficulty change
   const handleDifficultyChange = (newDifficulty) => {
+    // Only update if the difficulty actually changed
+    if (difficulty === newDifficulty) return;
     setDifficulty(newDifficulty);
-  // Reset level when changing difficulty or subject
-  useEffect(() => {
-    setCurrentLevel(1);
-    setQuestionsInLevel(10);
-    setAskedQuestions([]);
-    setLevelComplete(false);
-  }, [currentSubject, difficulty]);
 
     toast.info(`Difficulty changed to ${newDifficulty}!`);
   };
@@ -301,14 +296,25 @@ function MainFeature({ currentSubject }) {
     getNewQuestion();
   };
   
-  // Initialize the first question
+  // Initialize on first load
   useEffect(() => {
     getNewQuestion();
   }, []);
   
+  // Reset level when changing difficulty or subject
   useEffect(() => {
+    setCurrentLevel(1);
+    setQuestionsInLevel(10);
+    setAskedQuestions([]);
+    setLevelComplete(false);
     getNewQuestion();
   }, [currentSubject, difficulty]);
+  
+  // Debug helper - remove in production
+  useEffect(() => {
+    // Log for debugging
+    console.log(`Level: ${currentLevel}, Questions in level: ${questionsInLevel}, Asked questions: ${askedQuestions.length}`);
+  }, [currentLevel, questionsInLevel, askedQuestions]);
 
   return (
     <div className="py-4">
