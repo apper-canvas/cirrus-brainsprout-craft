@@ -17,6 +17,10 @@ function MainFeature({ currentSubject }) {
   const FireIcon = getIcon('Flame');
   
   // State management
+  const [currentLevel, setCurrentLevel] = useState(1);
+  const [questionsInLevel, setQuestionsInLevel] = useState(10);
+  const [askedQuestions, setAskedQuestions] = useState([]);
+  const [levelComplete, setLevelComplete] = useState(false);
   const [difficulty, setDifficulty] = useState('easy');
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [userAnswer, setUserAnswer] = useState('');
@@ -41,7 +45,12 @@ function MainFeature({ currentSubject }) {
         { question: "What is 5 - 2?", answer: "3", options: ["2", "3", "4", "5"] },
         { question: "What is 1 + 1?", answer: "2", options: ["1", "2", "3", "4"] },
         { question: "What is 4 + 0?", answer: "4", options: ["0", "4", "6", "8"] },
-        { question: "What is 3 + 2?", answer: "5", options: ["3", "4", "5", "6"] }
+        { question: "What is 3 + 2?", answer: "5", options: ["3", "4", "5", "6"] },
+        { question: "What is 6 - 2?", answer: "4", options: ["2", "3", "4", "5"] },
+        { question: "What is 3 + 3?", answer: "6", options: ["4", "5", "6", "7"] },
+        { question: "What is 7 - 3?", answer: "4", options: ["2", "3", "4", "5"] },
+        { question: "What is 2 + 4?", answer: "6", options: ["5", "6", "7", "8"] },
+        { question: "What is 5 + 1?", answer: "6", options: ["4", "5", "6", "7"] }
       ],
       medium: [
         { question: "What is 5 + 7?", answer: "12", options: ["10", "11", "12", "13"] },
@@ -64,7 +73,12 @@ function MainFeature({ currentSubject }) {
         { question: "What is the first letter in 'dog'?", answer: "d", options: ["b", "d", "g", "p"] },
         { question: "Which word rhymes with 'hat'?", answer: "cat", options: ["hit", "hot", "cat", "cut"] },
         { question: "How many letters are in the word 'sun'?", answer: "3", options: ["2", "3", "4", "5"] },
-        { question: "Which word starts with 'b'?", answer: "ball", options: ["apple", "ball", "car", "dog"] }
+        { question: "Which word starts with 'b'?", answer: "ball", options: ["apple", "ball", "car", "dog"] },
+        { question: "Which letter makes the 'sss' sound?", answer: "s", options: ["c", "s", "z", "t"] },
+        { question: "Which word rhymes with 'red'?", answer: "bed", options: ["ride", "rod", "bed", "bad"] },
+        { question: "What is the last letter in 'fish'?", answer: "h", options: ["f", "i", "s", "h"] },
+        { question: "Which word has the sound 'oo'?", answer: "moon", options: ["man", "moon", "mine", "map"] },
+        { question: "How many vowels in 'cat'?", answer: "1", options: ["0", "1", "2", "3"] }
       ],
       medium: [
         { question: "What is the opposite of 'hot'?", answer: "cold", options: ["warm", "cool", "cold", "wet"] },
@@ -86,7 +100,12 @@ function MainFeature({ currentSubject }) {
         { question: "Which shape has 3 sides?", answer: "triangle", options: ["circle", "square", "rectangle", "triangle"] },
         { question: "What color do you get mixing red and blue?", answer: "purple", options: ["green", "orange", "purple", "brown"] },
         { question: "How many legs does a cat have?", answer: "4", options: ["2", "4", "6", "8"] },
-        { question: "Which animal says 'moo'?", answer: "cow", options: ["pig", "sheep", "cow", "horse"] },
+        { question: "What comes after 'Wednesday'?", answer: "Thursday", options: ["Tuesday", "Thursday", "Friday", "Monday"] },
+        { question: "Which fruit is red?", answer: "apple", options: ["banana", "apple", "kiwi", "grape"] },
+        { question: "How many fingers on one hand?", answer: "5", options: ["3", "4", "5", "6"] },
+        { question: "Which animal swims in water?", answer: "fish", options: ["cat", "dog", "fish", "bird"] },
+        { question: "What color is the sky?", answer: "blue", options: ["green", "blue", "red", "yellow"] },
+        { question: "Which shape is round?", answer: "circle", options: ["square", "triangle", "rectangle", "circle"] }
         { question: "What comes after 'Wednesday'?", answer: "Thursday", options: ["Tuesday", "Thursday", "Friday", "Monday"] }
       ],
       medium: [
@@ -112,14 +131,34 @@ function MainFeature({ currentSubject }) {
     setShowAnswer(false);
     setUserAnswer('');
     setIsCorrect(null);
+    setLevelComplete(false);
     
     setTimeout(() => {
       const subjectQuestions = questionBanks[currentSubject] || questionBanks.math;
       const difficultyQuestions = subjectQuestions[difficulty] || subjectQuestions.easy;
       
       if (difficultyQuestions && difficultyQuestions.length > 0) {
-        const randomIndex = Math.floor(Math.random() * difficultyQuestions.length);
-        setCurrentQuestion(difficultyQuestions[randomIndex]);
+        // Filter out questions that have already been asked in this level
+        const availableQuestions = difficultyQuestions.filter(
+          (q) => !askedQuestions.includes(q.question)
+        );
+        
+        if (availableQuestions.length > 0) {
+          // Get a random question from available questions
+          const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+          const nextQuestion = availableQuestions[randomIndex];
+          setCurrentQuestion(nextQuestion);
+          
+          // Add this question to asked questions
+          setAskedQuestions(prev => [...prev, nextQuestion.question]);
+          
+          // Decrease questions remaining in level
+          setQuestionsInLevel(prev => prev - 1);
+        } else {
+          // If we've run out of unique questions, show level complete
+          setLevelComplete(true);
+          setCurrentQuestion(null);
+        }
       } else {
         setCurrentQuestion(null);
       }
@@ -128,9 +167,50 @@ function MainFeature({ currentSubject }) {
     }, 800);
   };
 
+  // Complete the current level and move to the next
+  const completeLevel = () => {
+    // Increase level
+    setCurrentLevel(prev => prev + 1);
+    
+    // Reset questions for new level
+    setQuestionsInLevel(10);
+    setAskedQuestions([]);
+    setLevelComplete(false);
+    
+    // Give rewards for completing level
+    const levelPoints = currentLevel * 5;
+    setScore(prev => prev + levelPoints);
+    
+    // Show toast for level completion
+    toast.success(`🎉 Level ${currentLevel} completed! +${levelPoints} points!`);
+    
+    // Add level badge for milestone levels
+    if (currentLevel === 3 && !badges.find(b => b.name === "Level 3 Master")) {
+      setBadges(prev => [...prev, { 
+        id: prev.length + 1, 
+        name: "Level 3 Master", 
+        earned: true, 
+        icon: "Crown" 
+      }]);
+      
+      toast.info("🏆 New badge earned: Level 3 Master!", {
+        autoClose: 5000,
+        icon: "👑"
+      });
+    }
+  };
+
   // Handle difficulty change
   const handleDifficultyChange = (newDifficulty) => {
     setDifficulty(newDifficulty);
+  // Reset level when changing difficulty or subject
+  useEffect(() => {
+    setCurrentLevel(1);
+    setQuestionsInLevel(10);
+    setAskedQuestions([]);
+    setLevelComplete(false);
+  }, [currentSubject, difficulty]);
+
     toast.info(`Difficulty changed to ${newDifficulty}!`);
   };
 
@@ -183,11 +263,6 @@ function MainFeature({ currentSubject }) {
     }
   };
 
-  // Get a new question when subject or difficulty changes
-  useEffect(() => {
-    getNewQuestion();
-  }, [currentSubject, difficulty]);
-
   // Get subject title for display
   const getSubjectTitle = () => {
     const titles = {
@@ -211,6 +286,27 @@ function MainFeature({ currentSubject }) {
   
   // Handle next question
   const handleNextQuestion = () => {
+    // If we've completed all questions in the level, mark level as complete
+    if (questionsInLevel <= 0) {
+      setLevelComplete(true);
+    } else {
+      getNewQuestion();
+    }
+  };
+  
+  // Start next level
+  const handleNextLevel = () => {
+    completeLevel();
+    // Get first question of new level
+    getNewQuestion();
+  };
+  
+  // Initialize the first question
+  useEffect(() => {
+    getNewQuestion();
+  }, []);
+  
+  useEffect(() => {
     getNewQuestion();
   };
 
@@ -223,6 +319,10 @@ function MainFeature({ currentSubject }) {
           <BadgeIcon className="ml-2" size={24} />
         </h3>
         <div className="flex items-center mt-2 text-white/80">
+          <div className="flex items-center mr-4">
+            <StarIcon size={16} className="mr-1" />
+            <span className="text-sm font-medium">Level: {currentLevel}</span>
+          </div>
           <div className="flex items-center mr-4">
             <StarIcon size={16} className="mr-1" />
             <span className="text-sm font-medium">Score: {score}</span>
@@ -254,6 +354,15 @@ function MainFeature({ currentSubject }) {
       </div>
       
       {/* Question Card */}
+      <div className="mb-4 px-4">
+        <div className="w-full bg-surface-200 dark:bg-surface-700 h-2 rounded-full overflow-hidden">
+          <div 
+            className="bg-primary h-full transition-all duration-300 ease-out"
+            style={{ width: `${(10 - questionsInLevel) * 10}%` }}
+          ></div>
+        </div>
+        <p className="text-xs text-right mt-1 text-surface-500">Question {10 - questionsInLevel + 1} of 10</p>
+      </div>
       <AnimatePresence mode="wait">
         <motion.div
           key={currentQuestion?.question || 'loading'}
@@ -268,6 +377,26 @@ function MainFeature({ currentSubject }) {
               <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4"></div>
               <p className="text-surface-600 dark:text-surface-400">Loading question...</p>
             </div>
+          ) : levelComplete ? (
+            <div className="text-center py-8">
+              <div className="w-20 h-20 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <TrophyIcon size={40} className="text-yellow-500" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Level {currentLevel} Complete!</h3>
+              <p className="text-surface-600 dark:text-surface-400 mb-6">
+                Congratulations! You've completed all 10 questions in this level.
+              </p>
+              <div className="flex justify-center">
+                <button
+                  onClick={handleNextLevel}
+                  className="btn btn-primary flex items-center"
+                >
+                  <span>Continue to Level {currentLevel + 1}</span>
+                  <ChevronRightIcon size={20} className="ml-1" />
+                </button>
+              </div>
+            </div>
+
           ) : currentQuestion ? (
             <>
               <div className="mb-6">
