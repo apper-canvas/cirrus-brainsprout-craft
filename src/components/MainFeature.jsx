@@ -332,9 +332,9 @@ function MainFeature({ currentSubject }) {
   // Reset level when changing difficulty or subject
   useEffect(() => {
     setCurrentLevel(1); 
-    setQuestionsInLevel(10); 
-    setLevelComplete(false);
-    getNewQuestion();
+    setQuestionsInLevel(10);
+    setLevelComplete(false); 
+    getNewQuestion(); 
   }, [currentSubject, difficulty]);
 
   // Auto navigate to next question after showing answer
