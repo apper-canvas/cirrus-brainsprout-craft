@@ -384,7 +384,7 @@ function MainFeature({ currentSubject }) {
             <FireIcon size={16} className="mr-1" />
             <span className="text-sm font-medium">Streak: {streak}</span>
           </div>
-        </div>
+                    <p className="relative z-10 font-medium">Question {questionNumber} of 10</p>
       </div>
       
       {/* Difficulty Selector */}
@@ -617,3 +617,35 @@ function MainFeature({ currentSubject }) {
 }
 
 export default MainFeature;
+  const getNewQuestion = async () => {
+    const activeSubject = currentSubject;
+    const questionBank = activeSubject === 'math' ? mathQuestions : readingQuestions;
+    // If no questions available for this level, don't proceed to avoid infinite loop
+      if (!levelComplete) {
+        completeLevel();
+      }
+  const handleNextLevel = async () => {
+    // First, reset states needed for the next level
+    setAnswerSelected(false);
+    setIsCorrect(null);
+    setUserAnswer('');
+    setFeedbackMessage('');
+    setAskedQuestions([]);
+    setQuestionNumber(1);
+    
+    // Important: reset levelComplete before setting new level
+    setLevelComplete(false);
+    
+    // Then update the level
+      setGameComplete(true);
+      return;
+    
+    // getNewQuestion will be called by the useEffect when currentLevel changes
+  useEffect(() => {  
+  
+  // Get a new question when level changes
+  useEffect(() => {
+    if (!levelComplete && !gameComplete) {
+      getNewQuestion();
+    }
+  }, [currentLevel]);
