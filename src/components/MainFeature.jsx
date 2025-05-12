@@ -385,7 +385,6 @@ function MainFeature({ currentSubject }) {
             <span className="text-sm font-medium">Streak: {streak}</span>
           </div>
                     <p className="relative z-10 font-medium">Question {questionNumber} of 10</p>
-      
       {/* Difficulty Selector */}
       <div className="mb-6 flex justify-center">
         <div className="bg-surface-100 dark:bg-surface-800 rounded-full p-1 flex">
