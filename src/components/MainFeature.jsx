@@ -315,8 +315,6 @@ function MainFeature({ currentSubject }) {
   }, [currentSubject, difficulty, currentLevel]);
 
   // Auto navigate to next question after showing answer
-  }, [currentSubject, difficulty]);
-  
   // Debug helper - remove in production
   useEffect(() => {
     // Log for debugging
