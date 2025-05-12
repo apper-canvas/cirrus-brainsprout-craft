@@ -384,7 +384,6 @@ function MainFeature({ currentSubject }) {
             <FireIcon size={16} className="mr-1" />
             <span className="text-sm font-medium">Streak: {streak}</span>
           </div>
-                    <p className="relative z-10 font-medium">Question {questionNumber} of 10</p>
             <button
               key={level}
               onClick={() => handleDifficultyChange(level)}
