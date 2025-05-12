@@ -19,7 +19,7 @@ function MainFeature({ currentSubject }) {
   // State management
   const [currentLevel, setCurrentLevel] = useState(1);
   const [questionsInLevel, setQuestionsInLevel] = useState(10);
-  const [askedQuestions, setAskedQuestions] = useState([]);
+  const [levelQuestions, setLevelQuestions] = useState({});
   const [levelComplete, setLevelComplete] = useState(false);
   const [difficulty, setDifficulty] = useState('easy');
   const [currentQuestion, setCurrentQuestion] = useState(null);
@@ -137,11 +137,13 @@ function MainFeature({ currentSubject }) {
     setTimeout(() => {
       const subjectQuestions = questionBanks[currentSubject] || questionBanks.math;
       const difficultyQuestions = subjectQuestions[difficulty] || subjectQuestions.easy;
+      const currentLevelKey = `${currentSubject}-${difficulty}-${currentLevel}`;
+      const askedQuestionsForLevel = levelQuestions[currentLevelKey] || [];
       
       if (difficultyQuestions && difficultyQuestions.length > 0) {
         // Filter out questions that have already been asked in this level
         const availableQuestions = difficultyQuestions.filter(
-          (q) => !askedQuestions.includes(q.question)
+          (q) => !askedQuestionsForLevel.includes(q.question)
         );
         
         if (availableQuestions.length > 0) {
@@ -150,8 +152,12 @@ function MainFeature({ currentSubject }) {
           const nextQuestion = availableQuestions[randomIndex];
           setCurrentQuestion(nextQuestion);
           
-          // Add this question to asked questions
-          setAskedQuestions(prevAsked => [...prevAsked, nextQuestion.question]);
+          // Add this question to asked questions for this level
+          const updatedQuestionsForLevel = [...askedQuestionsForLevel, nextQuestion.question];
+          setLevelQuestions(prevLevelQuestions => ({
+            ...prevLevelQuestions,
+            [currentLevelKey]: updatedQuestionsForLevel
+          }));
           
           // Decrease questions remaining in level
           setQuestionsInLevel(prev => prev - 1);
@@ -177,7 +183,6 @@ function MainFeature({ currentSubject }) {
     
     // Reset questions for new level
     setQuestionsInLevel(10);
-    setAskedQuestions([]);
     setLevelComplete(false);
     
     // Give rewards for completing level 
@@ -285,7 +290,9 @@ function MainFeature({ currentSubject }) {
   // Handle next question
   const handleNextQuestion = () => {
     // If we've completed all questions in the level, mark level as complete
-    if (questionsInLevel <= 0 && askedQuestions.length >= 10) {
+    const currentLevelKey = `${currentSubject}-${difficulty}-${currentLevel}`;
+    const askedQuestionsForLevel = levelQuestions[currentLevelKey] || [];
+    if (questionsInLevel <= 0 && askedQuestionsForLevel.length >= 10) {
       setLevelComplete(true);
     } else {
       getNewQuestion();
@@ -314,7 +321,6 @@ function MainFeature({ currentSubject }) {
   useEffect(() => {
     setCurrentLevel(1); 
     setQuestionsInLevel(10); 
-    setAskedQuestions([]); 
     setLevelComplete(false); 
     getNewQuestion();
   }, [currentSubject, difficulty]);
@@ -323,8 +329,10 @@ function MainFeature({ currentSubject }) {
   // Debug helper - remove in production
   useEffect(() => {
     // Log for debugging
-    console.log(`Level: ${currentLevel}, Questions in level: ${questionsInLevel}, Asked questions: ${askedQuestions.length}`);
-  }, [currentLevel, questionsInLevel, askedQuestions]);
+    const currentLevelKey = `${currentSubject}-${difficulty}-${currentLevel}`;
+    const askedQuestionsForLevel = levelQuestions[currentLevelKey] || [];
+    console.log(`Level: ${currentLevel}, Questions in level: ${questionsInLevel}, Asked questions: ${askedQuestionsForLevel.length}`);
+  }, [currentLevel, questionsInLevel, levelQuestions, currentSubject, difficulty]);
 
   // Auto navigate to next question after showing answer
   useEffect(() => {
@@ -388,7 +396,9 @@ function MainFeature({ currentSubject }) {
             style={{ width: `${(10 - questionsInLevel) * 10}%` }}
           ></div>
         </div>
-        <p className="text-xs text-right mt-1 text-surface-500">Question {Math.min(askedQuestions.length, 10)} of 10</p>
+        {/* Display progress based on questions asked in current level */}
+        {(() => {const currentLevelKey = `${currentSubject}-${difficulty}-${currentLevel}`; 
+          return <p className="text-xs text-right mt-1 text-surface-500">Question {Math.min((levelQuestions[currentLevelKey] || []).length, 10)} of 10</p>})()}
       </div>
       <AnimatePresence mode="wait">
         <motion.div
