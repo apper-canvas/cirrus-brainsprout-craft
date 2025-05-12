@@ -168,6 +168,7 @@ function MainFeature({ currentSubject }) {
   };
 
   // Complete the current level and move to the next
+  // Reset questions for new level
   const completeLevel = () => {
     // Increase level
     setCurrentLevel(prev => prev + 1);
@@ -292,7 +293,10 @@ function MainFeature({ currentSubject }) {
   // Start next level
   const handleNextLevel = () => {
     completeLevel();
-    // Get first question of new level
+    // Reset state for new level
+    setIsLoading(true);
+    setShowAnswer(false);
+    setUserAnswer('');
     getNewQuestion();
   };
   
@@ -304,10 +308,13 @@ function MainFeature({ currentSubject }) {
   // Reset level when changing difficulty or subject
   useEffect(() => {
     setCurrentLevel(1);
-    setQuestionsInLevel(10);
-    setAskedQuestions([]);
-    setLevelComplete(false);
+    setQuestionsInLevel(10); 
+    setAskedQuestions([]); 
+    setLevelComplete(false); 
     getNewQuestion();
+  }, [currentSubject, difficulty, currentLevel]);
+
+  // Auto navigate to next question after showing answer
   }, [currentSubject, difficulty]);
   
   // Debug helper - remove in production
