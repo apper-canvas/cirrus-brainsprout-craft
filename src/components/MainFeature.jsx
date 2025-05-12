@@ -385,7 +385,6 @@ function MainFeature({ currentSubject }) {
             <span className="text-sm font-medium">Streak: {streak}</span>
           </div>
                     <p className="relative z-10 font-medium">Question {questionNumber} of 10</p>
-          {['easy', 'medium', 'hard'].map((level) => (
             <button
               key={level}
               onClick={() => handleDifficultyChange(level)}
