@@ -307,12 +307,14 @@ function MainFeature({ currentSubject }) {
   const handleNextLevel = () => {
     completeLevel();
     
-    // Reset state for new level
-    setIsLoading(true);
+    // Reset states for new level
+    setLevelComplete(false);
+    setQuestionsInLevel(10);
     setShowAnswer(false);
     setUserAnswer('');
     setIsCorrect(null);
-    
+    setIsLoading(true);
+
     getNewQuestion();
   };
   
@@ -325,7 +327,7 @@ function MainFeature({ currentSubject }) {
   useEffect(() => {
     setCurrentLevel(1); 
     setQuestionsInLevel(10); 
-    setLevelComplete(false); 
+    setLevelComplete(false);
     getNewQuestion();
   }, [currentSubject, difficulty]);
 
@@ -344,7 +346,13 @@ function MainFeature({ currentSubject }) {
     if (showAnswer) {
       timer = setTimeout(() => {
         handleNextQuestion();
-      }, 2000); // 2 second delay before moving to next question
+      }, 2000);
+    }
+    
+    // Reset timer if we're showing level complete UI
+    if (levelComplete) {
+      clearTimeout(timer);
+      return;
     }
     return () => clearTimeout(timer);
   }, [showAnswer]);
