@@ -129,7 +129,7 @@ function MainFeature({ currentSubject }) {
   const getNewQuestion = () => {
     setIsLoading(true); 
     setShowAnswer(false); 
-    setUserAnswer(''); 
+    setUserAnswer('');
     setIsCorrect(null);
     setIsCorrect(null);
     setLevelComplete(false);
@@ -143,6 +143,7 @@ function MainFeature({ currentSubject }) {
       const difficultyQuestions = subjectQuestions[difficulty] || subjectQuestions.easy; 
       const currentLevelKey = `${currentSubject}-${difficulty}-${currentLevel}`;
       const askedQuestionsForLevel = levelQuestions[currentLevelKey] || [];
+      console.log(`Getting new question - Level: ${currentLevel}, Questions asked: ${askedQuestionsForLevel.length}`);
       
       if (difficultyQuestions && difficultyQuestions.length > 0) {
         // Filter out questions that have already been asked in this level
@@ -305,17 +306,22 @@ function MainFeature({ currentSubject }) {
   
   // Start next level
   const handleNextLevel = () => {
+    setIsLoading(true);
+    
+    // First, complete the current level
     completeLevel();
     
-    // Reset states for new level
-    setLevelComplete(false);
-    setQuestionsInLevel(10);
-    setShowAnswer(false);
-    setUserAnswer('');
-    setIsCorrect(null);
-    setIsLoading(true);
-
-    getNewQuestion();
+    // Wait for state updates to complete before getting a new question
+    setTimeout(() => {
+      // Reset states for new level
+      setLevelComplete(false);
+      setQuestionsInLevel(10);
+      setShowAnswer(false);
+      setUserAnswer('');
+      setIsCorrect(null);
+      
+      getNewQuestion();
+    }, 100);
   };
   
   // Initialize on first load
@@ -409,7 +415,7 @@ function MainFeature({ currentSubject }) {
           ></div>
         </div>
         {/* Display progress based on questions asked in current level */}
-        {(() => {const currentLevelKey = `${currentSubject}-${difficulty}-${currentLevel}`; 
+        {(() => {const currentLevelKey = `${currentSubject}-${difficulty}-${currentLevel}`;
           return <p className="text-xs text-right mt-1 text-surface-500">Question {Math.min((levelQuestions[currentLevelKey] || []).length, 10)} of 10</p>})()}
       </div>
       <AnimatePresence mode="wait">
