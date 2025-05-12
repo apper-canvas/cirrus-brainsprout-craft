@@ -384,6 +384,9 @@ function MainFeature({ currentSubject }) {
             <FireIcon size={16} className="mr-1" />
             <span className="text-sm font-medium">Streak: {streak}</span>
           </div>
+        </div>
+        <div className="flex gap-2 mt-2">
+          {['easy', 'medium', 'hard'].map((level) => (
             <button
               key={level}
               onClick={() => handleDifficultyChange(level)}
