@@ -127,9 +127,10 @@ function MainFeature({ currentSubject }) {
 
   // Get a new question based on current subject and difficulty
   const getNewQuestion = () => {
-    setIsLoading(true);
-    setShowAnswer(false);
-    setUserAnswer('');
+    setIsLoading(true); 
+    setShowAnswer(false); 
+    setUserAnswer(''); 
+    setIsCorrect(null);
     setIsCorrect(null);
     setLevelComplete(false);
     
@@ -150,14 +151,14 @@ function MainFeature({ currentSubject }) {
           setCurrentQuestion(nextQuestion);
           
           // Add this question to asked questions
-          setAskedQuestions(prev => [...prev, nextQuestion.question]);
+          setAskedQuestions(prevAsked => [...prevAsked, nextQuestion.question]);
           
           // Decrease questions remaining in level
           setQuestionsInLevel(prev => prev - 1);
         } else {
           // If we've run out of unique questions, show level complete
           setLevelComplete(true);
-          setCurrentQuestion(null);
+          setCurrentQuestion(null); 
         }
       } else {
         setCurrentQuestion(null);
@@ -171,14 +172,15 @@ function MainFeature({ currentSubject }) {
   // Reset questions for new level
   const completeLevel = () => {
     // Increase level
-    setCurrentLevel(prev => prev + 1);
+    const newLevel = currentLevel + 1;
+    setCurrentLevel(newLevel);
     
     // Reset questions for new level
     setQuestionsInLevel(10);
     setAskedQuestions([]);
     setLevelComplete(false);
     
-    // Give rewards for completing level
+    // Give rewards for completing level 
     const levelPoints = currentLevel * 5;
     setScore(prev => prev + levelPoints);
     
@@ -283,7 +285,7 @@ function MainFeature({ currentSubject }) {
   // Handle next question
   const handleNextQuestion = () => {
     // If we've completed all questions in the level, mark level as complete
-    if (questionsInLevel <= 0) {
+    if (questionsInLevel <= 0 && askedQuestions.length >= 10) {
       setLevelComplete(true);
     } else {
       getNewQuestion();
@@ -293,10 +295,13 @@ function MainFeature({ currentSubject }) {
   // Start next level
   const handleNextLevel = () => {
     completeLevel();
+    
     // Reset state for new level
     setIsLoading(true);
     setShowAnswer(false);
     setUserAnswer('');
+    setIsCorrect(null);
+    
     getNewQuestion();
   };
   
@@ -381,7 +386,7 @@ function MainFeature({ currentSubject }) {
           <div 
             className="bg-primary h-full transition-all duration-300 ease-out"
             style={{ width: `${(10 - questionsInLevel) * 10}%` }}
-          ></div>
+        <p className="text-xs text-right mt-1 text-surface-500">Question {Math.min(askedQuestions.length, 10)} of 10</p>
         </div>
         <p className="text-xs text-right mt-1 text-surface-500">Question {askedQuestions.length} of 10</p>
       </div>
