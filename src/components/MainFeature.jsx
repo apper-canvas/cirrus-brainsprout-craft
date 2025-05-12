@@ -327,7 +327,7 @@ function MainFeature({ currentSubject }) {
   // Initialize on first load
   useEffect(() => {
     getNewQuestion();
-  }, []);
+  }, []); // Empty dependency array ensures this only runs once on mount
   
   // Reset level when changing difficulty or subject
   useEffect(() => {
@@ -335,6 +335,8 @@ function MainFeature({ currentSubject }) {
     setQuestionsInLevel(10);
     setLevelComplete(false); 
     getNewQuestion(); 
+    // Removed currentLevel from dependency array to prevent
+    // resetting when progressing to next level
   }, [currentSubject, difficulty]);
 
   // Auto navigate to next question after showing answer
