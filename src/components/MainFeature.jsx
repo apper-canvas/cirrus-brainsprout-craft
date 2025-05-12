@@ -386,9 +386,9 @@ function MainFeature({ currentSubject }) {
           <div 
             className="bg-primary h-full transition-all duration-300 ease-out"
             style={{ width: `${(10 - questionsInLevel) * 10}%` }}
-        <p className="text-xs text-right mt-1 text-surface-500">Question {Math.min(askedQuestions.length, 10)} of 10</p>
+          ></div>
         </div>
-        <p className="text-xs text-right mt-1 text-surface-500">Question {askedQuestions.length} of 10</p>
+        <p className="text-xs text-right mt-1 text-surface-500">Question {Math.min(askedQuestions.length, 10)} of 10</p>
       </div>
       <AnimatePresence mode="wait">
         <motion.div
