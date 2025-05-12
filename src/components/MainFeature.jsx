@@ -135,8 +135,12 @@ function MainFeature({ currentSubject }) {
     setLevelComplete(false);
     
     setTimeout(() => {
-      const subjectQuestions = questionBanks[currentSubject] || questionBanks.math;
-      const difficultyQuestions = subjectQuestions[difficulty] || subjectQuestions.easy;
+      // Ensure we're using the correct subject's question bank when getting a new question
+      const validSubject = currentSubject && questionBanks[currentSubject] ? currentSubject : 'math';
+      const subjectQuestions = questionBanks[validSubject];
+      
+      // Get questions for the current difficulty level or default to easy
+      const difficultyQuestions = subjectQuestions[difficulty] || subjectQuestions.easy; 
       const currentLevelKey = `${currentSubject}-${difficulty}-${currentLevel}`;
       const askedQuestionsForLevel = levelQuestions[currentLevelKey] || [];
       
